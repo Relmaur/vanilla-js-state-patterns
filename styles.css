@@ -44,6 +44,12 @@ body {
 	align-items: center;
 	font-size: 2.5rem;
 	border-radius: var(--border-radius);
+	transition: all 150ms ease;
+}
+
+#game .tiles_container .tile.matched {
+/*	background-color: green;*/
+	pointer-events: none;
 }
 
 #game .tiles_container .tile .tile--front {
@@ -94,7 +100,6 @@ body {
 
 #game .menu_wrapper .menu_players .player p,
 #game .menu_wrapper .menu_players .player .player_score {
-
 	color: var(--neutral-light-color);
 	font-size: 3rem;
 	line-height: 1;
@@ -103,10 +108,9 @@ body {
 
 #game .menu_wrapper .menu_players .player .player_score {
 	display: block;
-	padding: 0 15px;
+	padding: 10px 20px;
 	font-size: 2.5rem;
 	font-weight: 200;
-	padding: 10px;
 	background-color: rgba(255, 255, 255, 0.5);
 	border-radius: var(--border-radius);
 }

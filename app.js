@@ -13,6 +13,7 @@ class MemoryGame {
 	mg_game_players = [];
 	mg_game_entry_point = {};
 	mg_game_tile_pairs = [];
+	mg_gane_tile_pair_nimber;
 	
 	mg_game_tail_pair_number;
 	
@@ -29,6 +30,15 @@ class MemoryGame {
 	get ID() {
 		return this.mg_game_ID;
 	};
+	
+	/**
+	* @method
+	* @description Get the tile pairs
+	* @return {array}
+	*/
+	get tilePairs() {
+		return this.mg_game_tile_pairs;
+	}
 	
 	/**
 	* @method
@@ -172,8 +182,10 @@ class Reactive {
 
 /** 
 * @class
-* @exports
-* @description Player class 
+* @description Player class
+* @param {GameInstance} The Game Instance
+* @param {string} The Player's Name
+* @param {string} Any valid CSS color value
 */
 class Player {
 	
@@ -276,6 +288,10 @@ class Player {
 	addMatchedPair(tile_instance_id, pair_matched) {
 		let new_pair_matched = {};
 		
+		// pair_matched.forEach(tile => {
+		// 	tile.element.classList.add("matched");
+		// });
+		
 		new_pair_matched[tile_instance_id] = [...this.mg_player_pairs_matched, ...pair_matched];
 		this.mg_player_pairs_matched.push(new_pair_matched);
 		
@@ -285,19 +301,31 @@ class Player {
 	/**
 	* @method
 	* @description - Card flip functionality - It only changes the instance's state 
+	* @param {TileInstance}
 	*/
-	flipCard(tile_instance) {
+	flipCard(tile_instance, tile_element) {
 		
 		// Makee sure the selection is below 2
 		if ( this.mg_player_selection.length < 2) {
 			
 			// Whilst the selection is below 2 keep pushing the selected tiles
-		this.mg_player_selection.push(tile_instance);
+			
+				let new_player_selection = {};
+				
+				new_player_selection['tile_instance'] = tile_instance;
+				new_player_selection['tile_element'] = tile_element
+			this.mg_player_selection.push(new_player_selection);
 		
 			// When the soection hits 2 tiles, the proceed ti check whether the twi selected items are pairs
 			if(this.mg_player_selection.length === 2) {
 				
-				if(this.mg_player_selection[0].ID == this.mg_player_selection[1].ID) {
+				if(this.mg_player_selection[0]["tile_instance"].ID == this.mg_player_selection[1]["tile_instance"].ID) {
+					
+				  this.mg_player_selection[0]["tile_element"].classList.add("matched");
+					this.mg_player_selection[0]["tile_element"].style.backgroundColor = this.color;
+					
+					this.mg_player_selection[1]["tile_element"].classList.add("matched");
+					this.mg_player_selection[1]["tile_element"].style.backgroundColor = this.color;
 					
 					this.addMatchedPair(tile_instance.ID, this.mg_player_selection);
 					
@@ -328,6 +356,7 @@ class Tile {
 	#mg_tile_some_letters = ['a', 'b', 'c'];
 	mg_tile_ID;
 	mg_tile_icon;
+	mg_tile_element;
 	#mg_game_instance;
 	
 	constructor(game_instance, icon = null) {
@@ -351,6 +380,15 @@ class Tile {
 	get icon() {
 		return this.mg_tile_icon
 	};
+	
+	/**
+	* @method
+	* @description Get the Tile Node
+	* @return The Tile node
+	*/
+	get element() {
+		return this.mg_tile_element;
+	}
 
 	/**
 	* Get the Game instance
@@ -358,6 +396,15 @@ class Tile {
 	*/
 	get game() {
 		return this.mg_game_instance;
+	};
+	
+	/**
+	* @method
+	* @description Set the Tile element
+	* @param {HTMLElement}
+	*/
+	set element(tile_element) {
+		this.mg_tile_element = tile_element;
 	}
 	
 };
@@ -407,13 +454,12 @@ const makeElement = (element, classes=[]) => {
 + @return (DOMElement) - The Tile Node
 */
 const makeTile = (tile_instance) => {
-	// const game_entry_point = tile_instance.game.entryPoint;
 	
 	const tile_icon = tile_instance.icon;
 	
 	// Tile Container
 	const tile_container = makeElement("div", ["tile"]);
-	tile_container.setAttribute('data-item-id', `${tile_instance.ID}`)
+	tile_container.setAttribute('data-item-id', `${tile_instance.ID}`);
 	
 	// Tile Front
 	const tile_front = makeElement("div", ["tile--front"]);
@@ -424,6 +470,8 @@ const makeTile = (tile_instance) => {
 	const tile_back_content = document.createTextNode(tile_icon);
 	tile_back.appendChild(tile_back_content);
 	tile_container.appendChild(tile_back);
+	
+	tile_instance.element = tile_container;
 	
 	return tile_container;
 }
@@ -487,11 +535,12 @@ const makeTiles = (game_instance, icons_array = []) => {
 	let shuffled_tile_pairs = shuffleArray(tiles);
 	
 	tiles.forEach(tile => {
+		
 		tile.tile_element.addEventListener('click', e => {
-		game_instance.activePlayer.flipCard(tile.tile_instance);
+			game_instance.activePlayer.flipCard(tile.tile_instance, tile.tile_element);
 		});
 		tile.tile_element_pair.addEventListener("click", e => {
-			game_instance.activePlayer.flipCard(tile.tile_instance);
+			game_instance.activePlayer.flipCard(tile.tile_instance, tile.tile_element_pair);
 		});
 	});
 	
@@ -502,8 +551,6 @@ const makeTiles = (game_instance, icons_array = []) => {
 	shuffled_tile_pairs.forEach(tile => {
 			shuffled_tile_elements.push(tile.tile_element_pair);
 		});
-		
-		// console.log("Shuffled Tile Elements: ", shuffled_tile_elements);
 	
 	return {tiles, shuffled_tile_elements};
 }
