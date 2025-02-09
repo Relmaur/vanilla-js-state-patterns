@@ -1,5 +1,7 @@
 
-/** Game class
+/** 
+* @class
+* @description Game class
 * @param {int} - (optional) the number of pairs
 */
 class MemoryGame {
@@ -20,7 +22,8 @@ class MemoryGame {
 	};
 	
 	/**
-	* Get the Game instance ID
+	* @method
+	* @description Get the Game instance ID
 	* @return {number} - The Game's instance ID
 	*/
 	get ID() {
@@ -28,7 +31,7 @@ class MemoryGame {
 	};
 	
 	/**
-	* Get the Game instance number of tiles
+	* @description Get the Game instance number of tiles
 	* @return {number} - The number of tiles
 	*/
 	get tileNumber() {
@@ -36,7 +39,7 @@ class MemoryGame {
 	};
 	
 	/**
-	* Get the Game entry point
+	* @description Get the Game entry point
 	* @return {DOMElement} - The element in which the Game's interface is going to be running
 	*/
 	get entryPoint() {
@@ -44,7 +47,7 @@ class MemoryGame {
 	};
 	
 	/**
-	* Get the active Player's ID
+	* @description Get the active Player's ID
 	* @return {string} - The active player's ID
 	*/
 	get activePlayer() {
@@ -52,7 +55,7 @@ class MemoryGame {
 	};
 	
 	/**
-	Get the game players
+	* @description Get the game players
 	* @return {array} - An array of players
 	*/
 	get players() {
@@ -60,19 +63,24 @@ class MemoryGame {
 	}
 	
 	/**
-	* Set the acrive Player's ID
-	* @param {object} - The Player's instance
+	* @description Set the acrive Player's ID
+	* @param {PlayerInstance} - The Player's instance
 	*/
 	set activePlayer(player_instance) {
 		this.mg_game_active_player = player_instance;
 	};
 	
+	/**
+	* @description Set the Game players
+	* @param {array} - The Player's instance
+	*/
 	set players(player_array) {
 		this.mg_game_players = player_array;
 	};
 	
 	/**
-	* Set Game entry point
+	* @method
+	* @description Set Game entry point
 	* @param {string} selector - The selector string
 	*/
 	setIn(selector) {
@@ -83,6 +91,11 @@ class MemoryGame {
 		}
 	};
 	
+	/**
+	* @method
+	* @description Change the active player
+	* @return {PlayerInstance}
+	*/
 	nextPlayer() {
 		
 		let active_player_index = this.mg_game_players.findIndex(player => {
@@ -102,6 +115,10 @@ class MemoryGame {
 	
 };
 
+/**
+* @class
+* @description Barebones Reactivity System
+*/
 class Reactive {
 	constructor (initialValue) {
 		this._value = initialValue;
@@ -128,7 +145,11 @@ class Reactive {
 	}
 }
 
-/** Player class */
+/** 
+* @class
+* @exports
+* @description Player class 
+*/
 class Player {
 	
 	mg_player_ID;
@@ -222,7 +243,8 @@ class Player {
 	}
 	
 	/**
-	* Add numbers of matched pairts to the Player's pairsMatched number
+	* @method
+	* @description Add numbers of matched pairts to the Player's pairsMatched number
 	* @param {string} - The matched pair instance ID
 	* @param {array} - The number of matched pairs to add
 	*/
@@ -236,31 +258,23 @@ class Player {
 	};
 	
 	/**
-	* Card flip functionality
-	* @description - It only changes the instance's state 
+	* @method
+	* @description - Card flip functionality - It only changes the instance's state 
 	*/
 	flipCard(tile_instance) {
 		
 		// Makee sure the selection is below 2
 		if ( this.mg_player_selection.length < 2) {
 			
-			// console.log("clicked!"); // Testing
-			
 			// Whilst the selection is below 2 keep pushing the selected tiles
-			this.mg_player_selection.push(tile_instance);
-			
-			// console.log("Player selection length", this.mg_player_selection.length); // Testing
+		this.mg_player_selection.push(tile_instance);
 		
-			// Wheb the soection hits 2 tiles, the proceed ti check whether the twi selected items are pairs
+			// When the soection hits 2 tiles, the proceed ti check whether the twi selected items are pairs
 			if(this.mg_player_selection.length === 2) {
 				
 				if(this.mg_player_selection[0].ID == this.mg_player_selection[1].ID) {
 					
 					this.addMatchedPair(tile_instance.ID, this.mg_player_selection);
-					
-					// console.log("Player Pairs matched!: ", this.mg_player_pairs_matched.length); // Testing
-					
-					// console.log("Player Selection!: ", this.mg_player_selection);
 					
 					this.mg_player_selection = [];
 					
@@ -280,7 +294,10 @@ class Player {
 	
 };
 
-/** Tile class */
+/** 
+* @class
+* @description Tile class 
+*/
 class Tile {
 
 	#mg_tile_some_letters = ['a', 'b', 'c'];
@@ -321,7 +338,8 @@ class Tile {
 };
 
 /**
-* Shuffle any given array
+* @func
+* @description Shuffle any given array
 * @param {array} - The array to shuffle
 */
 const shuffleArray = arr => {
@@ -331,7 +349,8 @@ const shuffleArray = arr => {
 }
 
 /**
-* Create a DOM Element
+* @func
+* @description Create a DOM Element
 * @param {string} - The DOM Element to create ("div", "section", etc...)
 * @param {array} - The class list for that element
 */
@@ -357,7 +376,8 @@ const makeElement = (element, classes=[]) => {
 }
 
 /**
-* Creates a Tile Node
+* @func
+* @description Creates a Tile Node
 * @param {TileInstance} - The Tile instance
 + @return (DOMElement) - The Tile Node
 */
@@ -367,20 +387,14 @@ const makeTile = (tile_instance) => {
 	const tile_icon = tile_instance.icon;
 	
 	// Tile Container
-	// const tile_container = document.createElement("div");
-	// tile_container.classList.add("tile");
 	const tile_container = makeElement("div", ["tile"]);
 	tile_container.setAttribute('data-item-id', `${tile_instance.ID}`)
 	
 	// Tile Front
-	// const tile_front = document.createElement("div");
-	// tile_front.classList.add("tile--front");
 	const tile_front = makeElement("div", ["tile--front"]);
 	tile_container.appendChild(tile_front);
 	
 	// Tile Back
-	// const tile_back = document.createElement("div");
-	// tile_back.classList.add("tile--back");
 	const tile_back = makeElement("div", ["tile--back"]);
 	const tile_back_content = document.createTextNode(tile_icon);
 	tile_back.appendChild(tile_back_content);
@@ -390,7 +404,8 @@ const makeTile = (tile_instance) => {
 }
 
 /**
-* Generate the game tiles
+* @func
+* @description Generate the game tiles
 * @param {GameInstance} - The Game instance
 * @param {array} - The array of icons to use in the tiles (preferrably emojis)
 * @return {array} - An array of Tile objects
@@ -469,7 +484,8 @@ const makeTiles = (game_instance, icons_array = []) => {
 }
 
 /**
-* Create the Game's UI (active player, score, etc)
+* @func
+* @description Create the Game's UI (active player, score, etc)
 * @param {GameInstance} - The Game instance
 */
 const makeUI = (game_instance) => {
@@ -484,8 +500,6 @@ const makeUI = (game_instance) => {
 	menu_wrapper.appendChild(menu_players);
 	
 	players.forEach(player => {
-		
-		// console.log("Players to create: ", players);
 		
 		let player_element = makeElement("div", ["player"]);
 		
@@ -525,7 +539,9 @@ const makeUI = (game_instance) => {
 };
 
 /**
-* Start Game
+* @func
+* @exports
+* @description Start Game.
 * @param {string} - The node selector where we want the game to run
 * @param {array} - An array of players and their data
 * @param {array} - An array of icons to display in the cards
@@ -571,4 +587,4 @@ const startGame = (selector, players_array=[], icons_array=[]) => {
 };
 
 
-export { MemoryGame, Player, Tile, makeTiles, startGame };
+export { startGame };
