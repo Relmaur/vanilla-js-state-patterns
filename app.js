@@ -469,7 +469,7 @@ const makeTiles = (game_instance, icons_array = []) => {
 }
 
 /**
-+ Create the Game's UI (active player, score, etc)
+* Create the Game's UI (active player, score, etc)
 * @param {GameInstance} - The Game instance
 */
 const makeUI = (game_instance) => {
