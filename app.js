@@ -318,7 +318,7 @@ class Player {
 			// When the soection hits 2 tiles, the proceed ti check whether the twi selected items are pairs
 			if(this.mg_player_selection.length === 2) {
 				
-				if(this.mg_player_selection[0]["tile_instance"].ID == this.mg_player_selection[1]["tile_instance"].ID) {
+				if(this.mg_player_selection[0]["tile_instance"].ID == this.mg_player_selection[1]["tile_instance"].ID && this.mg_player_selection[0]["tile_element"] !== this.mg_player_selection[1]["tile_element"]) {
 					
 				  this.mg_player_selection[0]["tile_element"].classList.add("matched");
 					this.mg_player_selection[0]["tile_element"].style.backgroundColor = this.color;
@@ -332,7 +332,11 @@ class Player {
 					
 					alert("Keep Going!");	
 					
-				} else {
+				} else if(this.mg_player_selection[0]["tile_element"] === this.mg_player_selection[1]["tile_element"]) {
+					this.mg_player_selection = [];
+					alert("You gotta select other Tile!");
+				}
+				else {
 					// Handle the Player switching ere'
 					let next_player = this.mg_game_instance.nextPlayer();
 					
