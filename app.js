@@ -13,6 +13,7 @@ class MemoryGame {
 	mg_game_players = [];
 	mg_game_entry_point = {};
 	mg_game_tile_pairs = [];
+	mg_gane_tile_pair_nimber;
 	
 	mg_game_tail_pair_number;
 	
