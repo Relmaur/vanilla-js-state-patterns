@@ -1,4 +1,4 @@
-import { MemoryGame, Player, Tile, makeTiles, startGame } from './app.js';
+import { startGame } from './app.js';
 
 document.addEventListener("DOMContentLoaded", e => {
 	
