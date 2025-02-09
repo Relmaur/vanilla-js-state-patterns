@@ -61,12 +61,13 @@ body {
 	z-index: 2;
 	background-color: var(--primary-color);
 	border-radius: var(--border-radius);
-	opacity: 0.5;
+	opacity: 0.0;
 }
 
 #game .tiles_container .tile .tile--back {
 	position: relative;
 	z-index: 1;
+	font-size: 3rem;
 }
 
 #game .menu_wrapper {

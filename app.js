@@ -582,6 +582,7 @@ const makeUI = (game_instance) => {
 		
 		// Scores
 		let player_score = makeElement("div", ["player_score"]);
+		player_score.style.backgroundColor = player.color;
 		let player_score_text = document.createTextNode(player.score);
 		player_score.appendChild(player_score_text);
 		player_element.appendChild(player_score);
