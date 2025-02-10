@@ -329,6 +329,8 @@ class Player {
 	*/
 	flipCard(tile_instance, tile_element) {
 		
+		tile_element.classList.add("flipped");
+		
 		// Makee sure the selection is below 2
 		if ( this.mg_player_selection.length < 2) {
 			
@@ -358,16 +360,32 @@ class Player {
 					alert("Keep Going!");	
 					
 				} else if(this.mg_player_selection[0]["tile_element"] === this.mg_player_selection[1]["tile_element"]) {
+					
+					this.mg_player_selection.forEach(tile => {
+							tile["tile_element"].classList.remove("flipped");
+						});
+					
 					this.mg_player_selection = [];
+					
 					alert("You gotta select other Tile!");
 				}
 				else {
-					// Handle the Player switching ere'
-					let next_player = this.mg_game_instance.nextPlayer();
 					
-					this.mg_player_selection = [];
+					setTimeout(() => {
 					
-					alert(`No match, dude! ${next_player.name}\'s turn!`);
+						this.mg_player_selection.forEach(tile => {
+							tile["tile_element"].classList.remove("flipped");
+						});
+						
+						this.mg_player_selection = [];
+						
+						// Handle the Player switching ere'
+						let next_player = this.mg_game_instance.nextPlayer();
+						
+						alert(`No match, dude! ${next_player.name}\'s turn!`);
+					
+					}, 200);
+					
 				}
 			};
 		}
@@ -495,8 +513,10 @@ const makeTile = (tile_instance) => {
 	
 	// Tile Back
 	const tile_back = makeElement("div", ["tile--back"]);
+	const tile_back_p = makeElement("p");
 	const tile_back_content = document.createTextNode(tile_icon);
-	tile_back.appendChild(tile_back_content);
+	tile_back_p.appendChild(tile_back_content);
+	tile_back.appendChild(tile_back_p);
 	tile_container.appendChild(tile_back);
 	
 	tile_instance.element = tile_container;
@@ -542,7 +562,7 @@ const makeTiles = (game_instance, icons_array = []) => {
 			
 		});
 	} else {
-		for (let i = 0; i <= game_instance.tileNumber; i++) {
+		for (let i = 1; i <= game_instance.tileNumber; i++) {
 			let tile = new Tile(game_instance, `${i}`);
 			let tile_element = makeTile(tile);
 			let tile_element_pair = makeTile(tile);
@@ -652,7 +672,7 @@ const makePlayersMenu = (game_instance) => {
 * @description Create the Game's UI (active player, score, etc)
 * @param {GameInstance} - The Game instance
 */
-const makeUI = (game_instance) => {
+const makeUI = (game_instance, icons_array=[]) => {
 	
 	const game_entry_point = game_instance.entryPoint;
 	
@@ -662,7 +682,7 @@ const makeUI = (game_instance) => {
 	// Tiles 
 	let tiles_container = makeElement("div", ["tiles_container"]);
 	
-	let tiles_elements = makeTiles(game_instance).shuffled_tile_elements;
+	let tiles_elements = makeTiles(game_instance, icons_array).shuffled_tile_elements;
 	
 	
 	tiles_elements.forEach(tile_element => {
@@ -702,8 +722,10 @@ const startGame = (selector, players_array=[], icons_array=[]) => {
 		
 		const p1 = new Player(game, 'P1', 'red');
 		const p2 = new Player(game, 'P2', 'blue');
+		// const p3 = new Player(game, 'P3', 'salmon');
 		players.push(p1);
 		players.push(p2);
+		// players.push(p3);
 		
 		// Set the Game players
 		game.players = players;
@@ -717,7 +739,7 @@ const startGame = (selector, players_array=[], icons_array=[]) => {
 		});
 	}
 	
-	makeUI(game);
+	makeUI(game, icons_array);
 	
 	return game;
 	

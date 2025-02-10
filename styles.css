@@ -42,13 +42,11 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	font-size: 2.5rem;
 	border-radius: var(--border-radius);
 	transition: all 150ms ease;
 }
 
 #game .tiles_container .tile.matched {
-/*	background-color: green;*/
 	pointer-events: none;
 }
 
@@ -61,13 +59,31 @@ body {
 	z-index: 2;
 	background-color: var(--primary-color);
 	border-radius: var(--border-radius);
-	opacity: 0.0;
+	opacity: 1;
+	transition: all 150ms ease;
+}
+
+#game .tiles_container .tile.flipped .tile--front {
+	opacity: 0;
 }
 
 #game .tiles_container .tile .tile--back {
 	position: relative;
 	z-index: 1;
-	font-size: 3rem;
+}
+#game .tiles_container .tile .tile--back p {
+	display: inline-block;
+	padding: 10px;
+	aspect-ratio: 1;
+	font-size: 4.5rem;
+	line-height: 1;
+	color: var(--neutral-light-color);
+}
+
+#game .tiles_container .tile.matched .tile--back p {
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(15px);
 }
 
 #game .menu_wrapper {
