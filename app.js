@@ -627,6 +627,7 @@ const makePlayersMenu = (game_instance) => {
 		if(active_player.ID === player.ID) player_element.classList.add("active")
 		
 		// Reactivity
+		// The callback anonymous function gets notified whenever the reactive prop mg_player_is_active changes.
 		player.mg_player_is_active.subscribe(() => {
 			
 			if(player.isActive) {
@@ -654,6 +655,7 @@ const makePlayersMenu = (game_instance) => {
 		player.scoreElement = player_score;
 		
 		// Reactivity
+		// Watch for changes on the the mg_player_score reactive property, and react to said change by updating the player_score element's text content
 		player.mg_player_score.subscribe((newScore) => {
 			player_score.textContent = newScore;
 		})
