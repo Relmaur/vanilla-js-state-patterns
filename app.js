@@ -1,3 +1,51 @@
+/**
+* @class
+* @description Barebones Reactivity System
+*/
+class Reactive {
+	constructor (initialValue) {
+		this._value = initialValue;
+		this._subscribers = [];
+	}
+	
+	/**
+	* @method
+	* @description Get the Reactive value
+	* @return {number} - The Reactive Value
+	*/
+	get value() {
+		return this._value;
+	}
+	
+	/**
+	* @method
+	* @description Set the Reactive Value
+	*/
+	set value(newValue) {
+		this._value = newValue;
+		this._notify();
+	}
+	
+	/**
+	* @method
+	* @description Subscribe the Resctive value
+	* @return {callback} - The reactive value change
+	*/
+	subscribe(callback) {
+		this._subscribers.push(callback);
+		return () => {
+			this._subscribers = this._subscribers.filter(cb => cb !== callback);
+		}
+	}
+	
+	/**
+	* @method
+	* @description Actualize the Reactive value
+	*/
+	_notify() {
+		this._subscribers.forEach(callback => callback(this._value));
+	}
+}
 
 /** 
 * @class
@@ -123,61 +171,20 @@ class MemoryGame {
 			new_active_player = this.mg_game_players[0];
 		};
 		
+		this.mg_game_players.forEach(player => {
+			if(player.ID === new_active_player.ID) {
+				player.isActive = true;
+			} else {
+				player.isActive = false;
+			}
+		});
+		
 		this.mg_game_active_player = new_active_player;
 		
 		return new_active_player;
 	}
 	
 };
-
-/**
-* @class
-* @description Barebones Reactivity System
-*/
-class Reactive {
-	constructor (initialValue) {
-		this._value = initialValue;
-		this._subscribers = [];
-	}
-	
-	/**
-	* @method
-	* @description Get the Reactive value
-	* @return {number} - The Reactive Value
-	*/
-	get value() {
-		return this._value;
-	}
-	
-	/**
-	* @method
-	* @description Set the Reactive Value
-	*/
-	set value(newValue) {
-		this._value = newValue;
-		this._notify();
-	}
-	
-	/**
-	* @method
-	* @description Subscribe the Resctive value
-	* @return {callback} - The reactive value change
-	*/
-	subscribe(callback) {
-		this._subscribers.push(callback);
-		return () => {
-			this._subscribers = this._subscribers.filter(cb => cb !== callback);
-		}
-	}
-	
-	/**
-	* @method
-	* @description Actualize the Reactive value
-	*/
-	_notify() {
-		this._subscribers.forEach(callback => callback(this._value));
-	}
-}
 
 /** 
 * @class
@@ -194,6 +201,7 @@ class Player {
 	mg_player_pairs_matched = [];
 	mg_player_score;
 	mg_player_score_element;
+	mg_player_is_active;
 	mg_game_instance;
 	
 	constructor(game_instance, player_name, player_color) {
@@ -203,6 +211,7 @@ class Player {
 		this.mg_player_pairs_matched = [];
 		this.mg_player_score = new Reactive(0);
 		this.mg_player_score_element = null;
+		this.mg_player_is_active = new Reactive(false);
 		this.mg_game_instance = game_instance;
 	};
 	
@@ -255,6 +264,14 @@ class Player {
 	}
 	
 	/**
+	* Get the Player's active status
+	* @return {bool} - The player's active status
+	*/
+	get isActive() {
+		return this.mg_player_is_active.value;
+	}
+	
+	/**
 	* Get the current game's instance
 	* @return The Gane instance
 	*/
@@ -276,6 +293,14 @@ class Player {
 	*/
 	set score(score) {
 		this.mg_player_score.value = score;
+	}
+	
+	/**
+	* Sets the player active status Reactively
+	* @param {bool} - The new player's active status
+	*/
+	set isActive(active) {
+		this.mg_player_is_active.value = active;
 	}
 	
 	/**
@@ -541,6 +566,7 @@ const makeTiles = (game_instance, icons_array = []) => {
 		
 		tile.tile_element.addEventListener('click', e => {
 			game_instance.activePlayer.flipCard(tile.tile_instance, tile.tile_element);
+			
 		});
 		tile.tile_element_pair.addEventListener("click", e => {
 			game_instance.activePlayer.flipCard(tile.tile_instance, tile.tile_element_pair);
@@ -556,27 +582,40 @@ const makeTiles = (game_instance, icons_array = []) => {
 		});
 	
 	return {tiles, shuffled_tile_elements};
-}
+};
 
 /**
 * @func
-* @description Create the Game's UI (active player, score, etc)
-* @param {GameInstance} - The Game instance
+* @description This functions creates the player menu component
+* @param {GameInstance} Receives a Game instance
+* @return The HTMLElement for the players menu
 */
-const makeUI = (game_instance) => {
+const makePlayersMenu = (game_instance) => {
+	
 	const players = game_instance.players;
 	const active_player = game_instance.activePlayer;
-	const game_entry_point = game_instance.entryPoint;
 	
 	let menu_wrapper = makeElement("div", ["menu_wrapper"]);
 	
 	// Players
 	let menu_players = makeElement("div", ["menu_players"]);
-	menu_wrapper.appendChild(menu_players);
 	
 	players.forEach(player => {
 		
 		let player_element = makeElement("div", ["player"]);
+		
+		if(active_player.ID === player.ID) player_element.classList.add("active")
+		
+		// Reactivity
+		player.mg_player_is_active.subscribe(() => {
+			
+			if(player.isActive) {
+				player_element.classList.add("active");
+			} else {
+				player_element.classList.remove("active");
+			}
+			
+		});
 		
 		// Player Name
 		let player_p_tag = makeElement("p");
@@ -587,30 +626,52 @@ const makeUI = (game_instance) => {
 		// Scores
 		let player_score = makeElement("div", ["player_score"]);
 		player_score.style.backgroundColor = player.color;
+		
 		let player_score_text = document.createTextNode(player.score);
 		player_score.appendChild(player_score_text);
 		player_element.appendChild(player_score);
 		
 		player.scoreElement = player_score;
 		
+		// Reactivity
 		player.mg_player_score.subscribe((newScore) => {
 			player_score.textContent = newScore;
 		})
 		
 		menu_players.appendChild(player_element);
+		
 	});
 	
+	menu_wrapper.appendChild(menu_players);
+	
+	return menu_wrapper;
+}
+
+/**
+* @func
+* @description Create the Game's UI (active player, score, etc)
+* @param {GameInstance} - The Game instance
+*/
+const makeUI = (game_instance) => {
+	
+	const game_entry_point = game_instance.entryPoint;
+	
+	// Player Menu
+	let player_menu = makePlayersMenu(game_instance);
+	
 	// Tiles 
-	let cards_container = makeElement("div", ["tiles_container"]);
+	let tiles_container = makeElement("div", ["tiles_container"]);
 	
 	let tiles_elements = makeTiles(game_instance).shuffled_tile_elements;
 	
-	tiles_elements.forEach(tile_element => {
-		cards_container.appendChild(tile_element);
-	});
-	game_entry_point.appendChild(cards_container);
 	
-	game_entry_point.appendChild(menu_wrapper);
+	tiles_elements.forEach(tile_element => {
+		tiles_container.appendChild(tile_element);
+	});
+	
+	game_entry_point.appendChild(tiles_container);
+	
+	game_entry_point.appendChild(player_menu);
 	
 };
 

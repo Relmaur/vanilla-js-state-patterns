@@ -97,6 +97,10 @@ body {
 	justify-content: center;
 	align-items: center;
 	gap: 10px;
+	opacity: 0.3;
+}
+#game .menu_wrapper .menu_players .player.active {
+	opacity: 1;
 }
 
 #game .menu_wrapper .menu_players .player p,
