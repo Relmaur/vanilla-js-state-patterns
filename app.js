@@ -19,7 +19,7 @@ class Reactive {
 	
 	/**
 	* @method
-	* @description Set the Reactive Value
+	* @description Set the Reactive Value and notify all Observers
 	*/
 	set value(newValue) {
 		this._value = newValue;
@@ -28,7 +28,7 @@ class Reactive {
 	
 	/**
 	* @method
-	* @description Subscribe the Resctive value
+	* @description Subscribe the callback function to the Observer value (any instance of this class' instances), and then unsusbscribe it if needed (by assigning the unsubscriber to a variable) to prevent memory leaks. 
 	* @return {callback} - The reactive value change
 	*/
 	subscribe(callback) {
@@ -40,7 +40,7 @@ class Reactive {
 	
 	/**
 	* @method
-	* @description Actualize the Reactive value
+	* @description Notify all registered Observers of a change occurred.
 	*/
 	_notify() {
 		this._subscribers.forEach(callback => callback(this._value));
@@ -628,9 +628,9 @@ const makePlayersMenu = (game_instance) => {
 		
 		// Reactivity
 		// The callback anonymous function gets notified whenever the reactive prop mg_player_is_active changes.
-		player.mg_player_is_active.subscribe(() => {
+		player.mg_player_is_active.subscribe((newVal) => {
 			
-			if(player.isActive) {
+			if(newVal) {
 				player_element.classList.add("active");
 			} else {
 				player_element.classList.remove("active");
